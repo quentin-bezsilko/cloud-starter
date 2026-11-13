@@ -1,0 +1,18 @@
+test:
+  stage: test
+  image: maven:3.9-eclipse-temurin-25
+  script:
+    - mvn $MAVEN_CLI_OPTS verify
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - target/surefire-reports/*.xml
+    paths:
+      - target/classes/
+      - target/test-classes/
+      - target/site/jacoco/
+      - target/surefire-reports/
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'

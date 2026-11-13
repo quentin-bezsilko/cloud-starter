@@ -1,0 +1,32 @@
+stages:
+  - quality
+  - build
+  - test
+  - analysis
+  - package
+  - security
+
+default:
+  interruptible: true
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - when: never
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  MAVEN_CLI_OPTS: "--batch-mode"
+
+cache:
+  paths:
+    - .m2/repository
+
+include:
+  - local: 'gitlab/ci/quality.yml'
+  - local: 'gitlab/ci/build.yml'
+  - local: 'gitlab/ci/test.yml'
+  - local: 'gitlab/ci/analysis.yml'
+  - local: 'gitlab/ci/package.yml'
+  - local: 'gitlab/ci/security.yml'

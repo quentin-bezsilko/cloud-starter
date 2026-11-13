@@ -28,6 +28,18 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
+		<lombok.version>1.18.42</lombok.version>
+		<spotless.version>2.46.1</spotless.version>
+		<google-java-format.version>1.36.0</google-java-format.version>
+		<jacoco.version>0.8.13</jacoco.version>
+		<sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
+		<springdoc.version>3.2.0</springdoc.version>
+
+		<!-- SonarQube -->
+		<sonar.projectKey>com.qbe:cloudstarter</sonar.projectKey>
+		<sonar.projectName>CloudStarter</sonar.projectName>
+		<sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+		<sonar.junit.reportPaths>${project.build.directory}/surefire-reports</sonar.junit.reportPaths>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -53,7 +65,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>3.2.0</version>
+			<version>${springdoc.version}</version>
 		</dependency>
 
 		<dependency>
@@ -90,22 +102,18 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.42</version>
+			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
-
-
 	<build>
 		<plugins>
-
-			<!-- Spring Boot Maven Plugin -->
+			<!-- Spring Boot -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
-			<!-- Maven Compiler Plugin avec Lombok -->
+			<!-- Compilation Java -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -115,27 +123,82 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.42</version>
+							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+			<!-- Spotless -->
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
-				<version>3.10.4</version>
-
+				<version>${spotless.version}</version>
 				<configuration>
 					<java>
 						<googleJavaFormat>
-							<version>1.36.1</version>
+							<version>${google-java-format.version}</version>
 						</googleJavaFormat>
 						<removeUnusedImports/>
 					</java>
 				</configuration>
+				<executions>
+					<execution>
+						<id>spotless-check</id>
+						<phase>validate</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- JaCoCo -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>BUNDLE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.80</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Sonar -->
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>${sonar-maven-plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>

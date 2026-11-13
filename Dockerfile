@@ -2,19 +2,15 @@ FROM maven:3.9-eclipse-temurin-25 AS build
 
 WORKDIR /app
 
-# Copier les fichiers Maven
+# Copier les fichiers Maven et le code source
 COPY pom.xml .
-COPY .mvn .mvn
-COPY mvnw .
-
-# Télécharger les dépendances
-RUN chmod +x mvnw && ./mvnw dependency:go-offline
-
-# Copier le code source
 COPY src ./src
 
+# Télécharger les dépendances
+RUN mvn dependency:go-offline
+
 # Compiler et générer le JAR
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 
 # ==========================================

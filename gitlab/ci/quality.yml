@@ -1,0 +1,8 @@
+spotless:
+  stage: quality
+  image: maven:3.9-eclipse-temurin-25
+  script:
+    - mvn $MAVEN_CLI_OPTS spotless:check
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
